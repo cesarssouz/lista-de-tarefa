@@ -23,6 +23,7 @@ function criabotaoApagar (li) {
     li.innerText += '  '
     botaoApagar.setAttribute('class', 'apagar')
     botaoApagar.setAttribute('title', 'Apagar esta tarefa')
+    botaoApagar.style.cursor = 'pointer'
     li.appendChild(botaoApagar)
 }
 
@@ -31,6 +32,7 @@ function criaTarefa(texto) {
     li.innerText = texto;
     tarefas.appendChild(li)
     criabotaoApagar(li)
+    salvarTarefas()
 }
 
 botao.addEventListener('click', function () {
@@ -39,3 +41,37 @@ botao.addEventListener('click', function () {
     inputTarefa.value = '';
         inputTarefa.focus()
 })
+
+document.addEventListener('click', function(e) {
+    const el = e.target
+
+    if(el.classList.contains('apagar')) {
+        el.parentElement.remove()
+        salvarTarefas()
+    }
+})
+
+function salvarTarefas () {
+    const liTarefas = tarefas.querySelectorAll('li')
+    const listaDeTarefas = []
+    
+    for (let tarefa of liTarefas) {
+        let tarefaTexto = tarefa.innerText
+        tarefaTexto = tarefaTexto.replace('Apagar', '').trim()
+        listaDeTarefas.push(tarefaTexto)
+    }
+
+    const tarefasJson = JSON.stringify(listaDeTarefas)
+    localStorage.setItem('tarefas', tarefasJson)
+}
+
+function saveTarefa () {
+    const tarefas = localStorage.getItem('tarefas')
+    const listaDeTarefas = JSON.parse(tarefas)
+
+    for (let tarefa of listaDeTarefas) {
+        criaTarefa(tarefa)
+    }
+}
+
+saveTarefa()
